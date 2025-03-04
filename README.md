@@ -1,10 +1,10 @@
-# helloworld
+我现在懒得写README 安装插件然后设置后 就可以工作了
+关于如何读空气:
 
-AstrBot 插件模板
+在Astrbot中的配置 消息平台 平台设置 启用分段回复 关闭仅对LLM结果分段 在过滤分段后的内容中填写<不发送消息> 或者随便填你想要的标签
+然后再人格设置中告诉ai在你认为不需要发送任何消息时 输出<不发送消息> 就可以读空气了
 
-A template plugin for AstrBot plugin feature
+为什么我不在插件里写好这个功能？
+如无必要，勿增实体。（其实是懒得做了）
 
-# 支持
-
-[帮助文档](https://astrbot.soulter.top/center/docs/%E5%BC%80%E5%8F%91/%E6%8F%92%E4%BB%B6%E5%BC%80%E5%8F%91/
-)
+注意事项：面向Claude3.7编程 由AI生成的代码 请仔细甄别与使用

@@ -1,0 +1,63 @@
+{
+    "group_msg_history": {
+        "description": "输入给大模型的消息数量",
+        "type": "int",
+        "hint": "决定了会输入给大模型多少条q群历史消息",
+        "default": 100
+    },
+    "image_count":{
+        "description":"输入给大模型的图片数量",
+        "type":"int",
+        "hint":"决定了会输入给大模型多少张图片,仅限支持图片输入的模型(警告:注意tokens消耗)",
+        "default":0
+    },
+    "enabled_groups": {
+        "description": "启用回复功能的群聊列表",
+        "type": "list",
+        "hint": "只有在这个列表中的群聊才会启用回复功能，如果为空则不启用回复功能",
+        "default": []
+    },
+    "filter_thinking": {
+        "description": "过滤思考过程",
+        "type": "bool",
+        "hint": "是否过滤大模型回复中被<think></think>标签包裹的思考内容",
+        "default": true
+    },
+    "persona":{
+        "description":"使用的人格",
+        "type":"string",
+        "hint":"填写人格名称,如果为空则使用默认的人格",
+        "default":""
+    },
+    "model_frequency":{
+        "description":"决定调用模型回复的频率",
+        "type":"object",
+        "items":{
+            "keywords":{
+                "description":"让模型回复的关键词",
+                "hint":"如果消息中包含这些关键词，则调用模型回复，留空则不启用该功能",
+                "type":"list",
+                "default":[]
+            },
+            "method":{
+                "type":"string",
+                "description":"使用什么方式决定是否调用模型",
+                "hint":"目前仅支持概率回复",
+                "default":"概率回复",
+                "options":["概率回复"]
+            },
+            "probability":{
+                "description":"概率回复相关，仅在设置为概率回复时有效",
+                "type":"object",
+                "items":{
+                    "probability":{
+                        "type":"float",
+                        "description":"回复概率",
+                        "hint":"填写回复概率,范围为0-1之间的小数,如0.1表示10%的概率回复,1表示100%回复",
+                        "default":0.1
+                    }
+                }
+            }
+        }
+    }
+}
