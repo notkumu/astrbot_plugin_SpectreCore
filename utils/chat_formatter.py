@@ -36,7 +36,7 @@ async def format_chat_history(group_id, base_path, config):
         
         # 添加图片指引提示
         if img_count > 0:
-            image_guide = f"【注意：当前给你输入了{img_count}张图片，标记为[图片1]到[图片{img_count}]，按照消息发送时间从早到晚排序】"
+            image_guide = f"【注意：当前最多输入{img_count}张图片(如果有)，标记为[图片1]到[图片{img_count}]，按照消息发送时间从早到晚排序,标记为[图片]的为超出限制的图片】"
             formatted_messages.append(image_guide)
         
         # 收集所有图片资源
@@ -76,6 +76,10 @@ async def format_chat_history(group_id, base_path, config):
             
             # 记录这张图片的全局编号
             messages[msg_idx]['_img_map'][res_idx] = img_idx
+            
+        # 添加读空气相关提示词
+        if config.get('read_air', False):
+            formatted_messages.append("【注意：你有不发送消息的能力，如果你需要不发送消息，请直接输出<NO_RESPONSE>】")
             
         # 从前向后正常处理消息
         for i, msg in enumerate(messages):

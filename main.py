@@ -8,13 +8,15 @@ from .message_formatter import MessageFormatter
 from .utils.chat_formatter import format_chat_history
 from .utils.reply_decision import should_reply
 from .utils.persona_handler import get_persona_info
-from .utils.text_filter import filter_thinking_process
+from .utils.text_filter import process_model_text
+from astrbot.api.provider import LLMResponse
+from astrbot.api.event import filter, AstrMessageEvent
 
 @register(
     "spectrecore",
     "23q3", 
     "使大模型更好的主动回复群聊中的消息，带来生动和沉浸的群聊对话体验",
-    "1.0.0",
+    "1.0.1",
     "https://github.com/23q3/astrbot_plugin_SpectreCore"
 )
 class SpectreCore(Star):
@@ -96,38 +98,6 @@ class SpectreCore(Star):
         
         return system_prompt, contexts
         
-    def process_model_response(self, reply_text: str) -> str:
-        """
-        处理模型的回复内容，根据配置进行文本过滤
-        
-        Args:
-            reply_text: 模型原始回复文本
-            
-        Returns:
-            处理后的回复文本
-        """
-        # 如果回复为空，直接返回
-        if not reply_text:
-            self.logger.warning("收到空回复")
-            return reply_text
-        
-        # 检查是否需要过滤思考过程
-        filter_thinking = self.config.get('filter_thinking', True)
-        
-        if filter_thinking:
-            # 检查文本开头是否包含思考标签
-            if reply_text.startswith('<think>'):
-                logger.info("检测到思考过程，正在过滤...")
-                filtered_text = filter_thinking_process(reply_text)
-                return filtered_text
-            else:
-                # 没有思考内容需要过滤
-                return reply_text
-        else:
-            # 不启用过滤
-            logger.debug("思考过程过滤已禁用")
-            return reply_text
-
     @event_message_type(EventMessageType.GROUP_MESSAGE)
     async def on_group_message(self, event: AstrMessageEvent):
         """处理群消息事件"""
@@ -171,7 +141,8 @@ class SpectreCore(Star):
                 
             # 准备调用大模型
             chat_history = await format_chat_history(group_id, self.base_path, self.config)
-            prompt = f"你在一个qq群聊中，以下是群聊的聊天记录:\n{chat_history}\n\n现在轮到你回复了，请直接输出你要发送的消息，不要输出任何解释，你只能回复普通的文本，不能回复如[qq表情:生气]或@某人等特殊内容"
+            prompt = f"你在一个qq群聊中，以下是群聊的聊天记录:\n{chat_history}\n\n现在轮到你回复了，请直接输出你要发送的消息。" + \
+                "注意给你的聊天记录是经过处理后的，并非原始的格式，所以不要试图发送[qq表情:生气]或@某人等特殊内容。"
             
             # 收集图片URL
             img_count = self.config.get('image_count', 0)
@@ -185,26 +156,46 @@ class SpectreCore(Star):
             system_prompt, contexts = await self.prepare_model_prompt(persona_info)
             logger.debug(f"提示词: {prompt}")
             # 调用大模型
-            func_tools_mgr = self.context.get_llm_tool_manager()
-            llm_response = await self.context.get_using_provider().text_chat(
+            if self.config.get('use_func_tool', False):
+                func_tools_mgr = self.context.get_llm_tool_manager()
+            else:
+                func_tools_mgr = None
+            yield event.request_llm(
                 prompt=prompt,
                 contexts=contexts,
                 image_urls=image_urls,
-                func_tool=func_tools_mgr,
+                func_tool_manager=func_tools_mgr,
                 system_prompt=system_prompt
-            )
-  
-            
-            # 发送回复
-            if llm_response.role == "assistant":
-                # 处理回复文本，过滤思考过程
-                response_text = self.process_model_response(llm_response.completion_text)
-                logger.info(f"大模型回复: {response_text[:100]}...")
-                yield event.plain_result(response_text)
-            elif llm_response.role == "tool":
-                tool_response = f"工具调用: {llm_response.tools_call_name}, 参数: {llm_response.tools_call_args}"
-                logger.info(tool_response)
+            )              
 
         except Exception as e:
             error_details = traceback.format_exc()
             logger.error(f"处理群消息时出错: {str(e)}\n{error_details}")
+
+    @filter.on_llm_response()
+    async def on_llm_resp(self, event: AstrMessageEvent, resp: LLMResponse): # 请注意有三个参数
+        """处理大模型回复"""
+        if self.config.get('filter_thinking', False) or self.config.get('read_air', False):
+            resp.completion_text = process_model_text(resp.completion_text, self.config)
+            if resp.completion_text == "":
+                event.stop_event()
+    
+    @command_group("spectrecore",alias=['sc'])
+    def spectrecore(self):
+        """SpectreCore插件指令组"""
+
+    @spectrecore.command("help", alias=['帮助', 'helpme'])
+    async def help(self, event: AstrMessageEvent):
+        """查看帮助文档"""
+        # /SpectreCore help
+        yield event.plain_result(f"暂无帮助文档，建议前往https://github.com/23q3/astrbot_plugin_SpectreCore查看")
+    
+    @spectrecore.group("debug")
+    def debug(self):
+        """调试指令组"""
+
+    @debug.command("llmtest")
+    async def llmtest(self, event: AstrMessageEvent, prompt: str):
+        """测试大模型"""
+        # /SpectreCore debug llmtest 你好
+        yield event.request_llm(prompt=prompt)

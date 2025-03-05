@@ -32,6 +32,43 @@ def filter_thinking_process(text: str) -> str:
         return text
 
 
+def process_model_text(reply_text: str, config: dict) -> str:
+    """
+    处理模型的回复内容，根据配置进行文本过滤
+    
+    Args:
+        reply_text: 模型原始回复文本
+        config: 插件配置字典，包含filter_thinking和read_air等配置项
+            
+    Returns:
+        处理后的回复文本
+    """
+    import logging
+    logger = logging.getLogger("SpectreCore.TextFilter")
+    
+    # 如果回复为空，直接返回
+    if not reply_text:
+        logger.warning("收到空回复")
+        return reply_text
+    
+    filter_thinking_text = filter_thinking_process(reply_text)
+    # 读空气
+    if config.get('read_air', False):
+        # 检查是否包含<NO_RESPONSE>标记
+        if "<NO_RESPONSE>" in filter_thinking_text:
+            logger.debug("检测到<NO_RESPONSE>标记，在读空气模式下返回空回复")
+            return ""
+        
+    # 思考过程过滤
+    if config.get('filter_thinking', True):
+        if filter_thinking_text != reply_text:
+            logger.debug("已过滤思考过程")
+            return filter_thinking_text
+    
+    logger.debug("未进行任何过滤")
+    return reply_text
+
+
 if __name__ == "__main__":
     import argparse
     

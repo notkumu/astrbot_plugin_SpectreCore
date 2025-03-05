@@ -29,6 +29,18 @@
         "hint":"填写人格名称,如果为空则使用默认的人格",
         "default":""
     },
+    "read_air":{
+        "description":"是否开启读空气",
+        "type":"bool",
+        "hint":"开启后会根据群聊消息自动判断是否需要回复,建议提示好AI在什么情况下不回复,什么情况下回复",
+        "default":false
+    },
+    "use_func_tool":{
+        "description":"是否启用函数工具",
+        "type":"bool",
+        "hint":"开启后大模型会调用提供的函数工具",
+        "default":"false"
+    },
     "model_frequency":{
         "description":"决定调用模型回复的频率",
         "type":"object",
