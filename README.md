@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![SpectreCore](https://s1.ax1x.com/2023/08/15/pPcVDs1.png)
+![SpectreCore](https://avatars.githubusercontent.com/u/129108081?s=48&v=4)
 
 [![version](https://img.shields.io/badge/version-v1.0-blue.svg?style=flat-square)](https://github.com/23q3/astrbot_plugin_SpectreCore)
 [![license](https://img.shields.io/badge/license-AGPL--3.0-green.svg?style=flat-square)](LICENSE)
@@ -142,7 +142,7 @@ SpectreCore (影芯) 是一个为 AstrBot 设计的高级群聊互动插件，�
 <tr>
 <td align="center">
 <a href="https://github.com/SengokuCola/MaiMBot">
-<img src="https://github.com/SengokuCola/MaiMBot/raw/main/docs/static/logo.png" width="80" alt="MaiMBot"><br>
+<img src="https://avatars.githubusercontent.com/u/25811392?s=48&v=4" width="80" alt="MaiMBot"><br>
 <sub><b>MaiMBot (麦麦)</b></sub>
 </a><br>
 <sub>一款专注于群组聊天的赛博网友QQ机器人</sub>
