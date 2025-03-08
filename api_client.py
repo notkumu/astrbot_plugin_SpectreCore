@@ -42,4 +42,19 @@ class APIClient:
                 return response
         except Exception as e:
             logger.error(f"获取消息失败, ID: {message_id}, 错误: {e}")
-        return {} 
+        return {}
+        
+    @classmethod
+    async def get_group_message_history(cls, client, group_id, count=20):
+        """获取群消息历史"""
+        try:
+            response = await client.api.call_action(
+                "get_group_msg_history",
+                group_id=group_id,
+                count=count
+            )
+            logger.debug(f"获取群 {group_id} 消息历史成功")
+            return response
+        except Exception as e:
+            logger.error(f"获取群 {group_id} 消息历史失败: {str(e)}")
+            return None 

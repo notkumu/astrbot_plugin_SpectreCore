@@ -39,7 +39,7 @@
         "description":"是否启用函数工具",
         "type":"bool",
         "hint":"开启后大模型会调用提供的函数工具",
-        "default":"false"
+        "default":false
     },
     "model_frequency":{
         "description":"决定调用模型回复的频率",

@@ -13,6 +13,13 @@ def should_reply(content, config, group_id=None):
         bool: 是否应该回复
     """
     try:
+        # 首先检查是否包含命令关键词，避免回复命令
+        command_keywords = ["reset", "help",  "spectrecore", "sc "]
+        for keyword in command_keywords:
+            if keyword in content.lower():
+                logger.debug(f"消息包含命令关键词 '{keyword}'，不回复")
+                return False
+                
         # 检查群聊是否在启用列表中
         if group_id is not None:
             enabled_groups = config.get('enabled_groups', [])
@@ -21,7 +28,7 @@ def should_reply(content, config, group_id=None):
                 logger.debug(f"群聊 {group_id} 未启用回复功能")
                 return False
         
-        # 首先检查模型频率设置
+        # 检查模型频率设置
         freq_config = config.get('model_frequency', {})
         
         # 检查关键词触发
