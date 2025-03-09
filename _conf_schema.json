@@ -26,7 +26,7 @@
     "persona":{
         "description":"使用的人格",
         "type":"string",
-        "hint":"填写人格名称,如果为空则使用默认的人格",
+        "hint":"填写人格名称,如果为空则不使用人格",
         "default":""
     },
     "read_air":{

@@ -12,7 +12,7 @@ async def get_persona_info(persona_name, context):
     """
     try:
         if not persona_name:
-            logger.debug("未指定人格名称，使用默认设置")
+            logger.debug("未指定人格名称,将不使用人格")
             return None
             
         # 获取所有可用的人格
@@ -29,7 +29,7 @@ async def get_persona_info(persona_name, context):
                 break
                 
         if not persona:
-            logger.warning(f"找不到名为 '{persona_name}' 的人格，将使用默认设置")
+            logger.warning(f"找不到名为 '{persona_name}' 的人格")
             return None
             
         logger.info(f"找到人格 '{persona_name}'")
