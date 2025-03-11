@@ -184,8 +184,8 @@ SpectreCore插件支持以下指令，所有指令均可使用 `/spectrecore` �
 <summary><b>最新版本</b></summary>
 
 ### v1.0.3 (2025-03-11)
-- 🐛 在处理大模型回复时增加了对角色的判断，避免调用函数工具时出错#15
-- 🐛 在提示词增加了bot的昵称和qq号，避免大模型不知道聊天记录中哪个是自己#14
+- 🐛 在处理大模型回复时增加了对角色的判断，避免调用函数工具时出错[issue#15](https://github.com/username/repo/issues/15)
+- 🐛 在提示词增加了bot的昵称和qq号，避免大模型不知道聊天记录中哪个是自己[issue#14](https://github.com/username/repo/issues/14)
 
 </details>
 
