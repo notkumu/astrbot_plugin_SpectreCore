@@ -58,3 +58,13 @@ class APIClient:
         except Exception as e:
             logger.error(f"获取群 {group_id} 消息历史失败: {str(e)}")
             return None 
+    @classmethod
+    async def get_login_info(cls, client) -> list:
+        """获取登录号信息"""
+        try:
+            response = await client.api.call_action("get_login_info")
+            return response           
+        except Exception as e:
+            logger.error(f"获取登录号信息失败: {str(e)}")
+            return None
+

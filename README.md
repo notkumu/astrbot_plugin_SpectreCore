@@ -61,13 +61,13 @@ SpectreCore (影芯) 是一个为 AstrBot 设计的高级群聊互动插件，�
 <details>
 <summary>展开查看安装步骤</summary>
 
-1. 首先确保已部署 AstrBot
+1. 首先确保已部署 [AstrBot](https://github.com/Soulter/AstrBot)
 2. 在插件市场中搜索 SpectreCore 点击安装
-3. 或点击右下角加号，输入本插件仓库链接安装：
+   或点击右下角加号，输入本插件仓库链接安装：
    ```
    https://github.com/23q3/astrbot_plugin_SpectreCore
    ```
-4. 重启 AstrBot 使插件生效
+3. 打开插件的配置界面，配置好相关选项，即可开始使用
 
 </details>
 
@@ -183,17 +183,21 @@ SpectreCore插件支持以下指令，所有指令均可使用 `/spectrecore` �
 <details open>
 <summary><b>最新版本</b></summary>
 
+### v1.0.3 (2025-03-11)
+- 🐛 在处理大模型回复时增加了对角色的判断，避免调用函数工具时出错#15
+- 🐛 在提示词增加了bot的昵称和qq号，避免大模型不知道聊天记录中哪个是自己#14
+
+</details>
+
+<details>
+<summary><b>历史版本</b></summary>
+
 ### v1.0.2 (2025-03-08)
 - 🔒 添加了群组锁机制，防止并发调用大模型
 - 🛠️ 优化了消息处理存储流程，极大提高了性能
 - 🔍 添加了清除聊天记录的指令
 - 🔍 添加了检测指令关键词不回复功能
 - 📝 改进了代码结构
-
-</details>
-
-<details>
-<summary><b>历史版本</b></summary>
 
 ### v1.0.1 (2025-03-05)
 - 🔍 增加了读空气功能

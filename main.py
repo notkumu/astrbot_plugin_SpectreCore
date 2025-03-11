@@ -5,7 +5,6 @@ import asyncio
 from astrbot.api.all import *
 from astrbot.core.platform.sources.aiocqhttp.aiocqhttp_message_event import AiocqhttpMessageEvent
 from .message_processor import MessageProcessor
-from .message_formatter import MessageFormatter
 from .utils.chat_formatter import format_chat_history
 from .utils.reply_decision import should_reply
 from .utils.persona_handler import get_persona_info
@@ -18,7 +17,7 @@ from .api_client import APIClient
     "spectrecore",
     "23q3", 
     "使大模型更好的主动回复群聊中的消息，带来生动和沉浸的群聊对话体验",
-    "1.0.2",
+    "1.0.3",
     "https://github.com/23q3/astrbot_plugin_SpectreCore"
 )
 class SpectreCore(Star):
@@ -197,11 +196,13 @@ class SpectreCore(Star):
             if not group_lock.locked():
                 async with group_lock:
                     logger.debug(f"群 {group_id} 获取锁成功，开始处理大模型调用")
-                    
                     # 准备调用大模型
+                    login_info = await APIClient.get_login_info(event.bot)
+                    botname = login_info.get('nickname')
+                    botqq = login_info.get('user_id')
                     chat_history = await format_chat_history(group_id, self.base_path, self.config)
-                    prompt = f"你在一个qq群聊中，以下是群聊的聊天记录:\n{chat_history}\n\n现在轮到你回复了，请直接输出你要发送的消息。" + \
-                        "注意给你的聊天记录是经过处理后的，并非原始的格式，所以不要试图发送[qq表情:生气]或@某人等特殊内容。"
+                    prompt = f"你在一个qq群聊中，你是qq号为{botqq}，昵称为{botname}的一名用户，以下是经过格式化后的聊天记录（所有消息均被格式化成文本，如图片被转换为[图片]，表情被转换为[动画表情]）:\n{chat_history}\n\n你输出的内容将作为群聊中的消息发送。" + \
+                        "你只应该发送文字消息，不要发送[图片]、[qq表情]、[@某人(id:xxx)]等你在聊天记录中看到的特殊内容。"
                     
                     # 收集图片URL（从本地历史消息中获取）
                     img_count = self.config.get('image_count', 0)
@@ -265,16 +266,20 @@ class SpectreCore(Star):
     @filter.after_message_sent()
     async def after_message_sent(self, event: AstrMessageEvent):
         """发送消息给消息平台适配器后"""
-        # 获取并保存机器人回复的消息
+        # 获取并保存机器人发送的消息
         await self.process_and_save_group_message(event)
 
     @filter.on_llm_response()
-    async def on_llm_resp(self, event: AstrMessageEvent, resp: LLMResponse): # 请注意有三个参数
+    async def on_llm_resp(self, event: AstrMessageEvent, resp: LLMResponse): 
         """处理大模型回复"""
-        if self.config.get('filter_thinking', False) or self.config.get('read_air', False):
-            resp.completion_text = process_model_text(resp.completion_text, self.config)
-            if resp.completion_text == "":
-                event.stop_event()
+        try:
+           if self.config.get('filter_thinking', False) or self.config.get('read_air', False) and resp.role == "assistant":
+                resp.completion_text = process_model_text(resp.completion_text, self.config)
+                if resp.completion_text == "":
+                    event.stop_event()
+        except Exception as e:
+            error_details = traceback.format_exc()
+            logger.error(f"处理大模型回复时出错: {str(e)}\n{error_details}")
     
     @command_group("spectrecore",alias=['sc'])
     def spectrecore(self):

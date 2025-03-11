@@ -79,7 +79,7 @@ async def format_chat_history(group_id, base_path, config):
             
         # 添加读空气相关提示词
         if config.get('read_air', False):
-            formatted_messages.append("【注意：你有不发送消息的能力，如果你需要不发送消息，请直接输出<NO_RESPONSE>】")
+            formatted_messages.append("【如果你觉得现在不适合发消息，请直接输出<NO_RESPONSE>】")
             
         # 从前向后正常处理消息
         for i, msg in enumerate(messages):
