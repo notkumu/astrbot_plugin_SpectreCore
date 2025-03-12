@@ -183,14 +183,17 @@ SpectreCore插件支持以下指令，所有指令均可使用 `/spectrecore` �
 <details open>
 <summary><b>最新版本</b></summary>
 
-### v1.0.3 (2025-03-11)
-- 🐛 在处理大模型回复时增加了对角色的判断，避免调用函数工具时出错[issue#15](https://github.com/23q3/astrbot_plugin_SpectreCore/issues/15)
-- 🐛 在提示词增加了bot的昵称和qq号，避免大模型不知道聊天记录中哪个是自己[issue#14](https://github.com/23q3/astrbot_plugin_SpectreCore/issues/14)
+### v1.0.4 (2025-03-12)
+- 🐛 修正处理大模型回复时的条件判断逻辑[issue#15](https://github.com/23q3/astrbot_plugin_SpectreCore/issues/15)
 
 </details>
 
 <details>
 <summary><b>历史版本</b></summary>
+
+### v1.0.3 (2025-03-11)
+- 🐛 在处理大模型回复时增加了对角色的判断，避免调用函数工具时出错[issue#15](https://github.com/23q3/astrbot_plugin_SpectreCore/issues/15)
+- 🐛 在提示词增加了bot的昵称和qq号，避免大模型不知道聊天记录中哪个是自己[issue#14](https://github.com/23q3/astrbot_plugin_SpectreCore/issues/14)
 
 ### v1.0.2 (2025-03-08)
 - 🔒 添加了群组锁机制，防止并发调用大模型

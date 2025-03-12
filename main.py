@@ -17,7 +17,7 @@ from .api_client import APIClient
     "spectrecore",
     "23q3", 
     "使大模型更好的主动回复群聊中的消息，带来生动和沉浸的群聊对话体验",
-    "1.0.3",
+    "1.0.4",
     "https://github.com/23q3/astrbot_plugin_SpectreCore"
 )
 class SpectreCore(Star):
@@ -273,7 +273,7 @@ class SpectreCore(Star):
     async def on_llm_resp(self, event: AstrMessageEvent, resp: LLMResponse): 
         """处理大模型回复"""
         try:
-           if self.config.get('filter_thinking', False) or self.config.get('read_air', False) and resp.role == "assistant":
+           if (self.config.get('filter_thinking', False) or self.config.get('read_air', False)) and resp.role == "assistant":
                 resp.completion_text = process_model_text(resp.completion_text, self.config)
                 if resp.completion_text == "":
                     event.stop_event()
