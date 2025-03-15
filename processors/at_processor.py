@@ -27,19 +27,16 @@ class AtProcessor:
         username = name_cache.get(qq)
         if username:
             return f"[@{username}(id:{qq})]"
-        
         # 2. 检查历史消息
         if messages:
             username = cls.find_username_in_messages(qq, messages)
             if username:
                 name_cache.put(qq, username)
                 return f"[@{username}(id:{qq})]"
-        
         # 3. 尝试API获取
         if client and group_id:
             username = await APIClient.get_group_member_info(client, group_id, qq)
             if username:
                 return f"[@{username}(id:{qq})]"
-        
         # 都失败了才返回ID
-        return f"[@未获取到用户名(id:{qq})]" 
+        return f"[@未获取到用户名(id:{qq})]"
