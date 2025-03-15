@@ -22,27 +22,39 @@ class APIClient:
                     # 同时缓存用户信息
                     name_cache.put(user_id, name)
                     return name
-            
+                return ''
+            return ''
         except Exception as e:
             logger.error(f"获取群成员信息失败: {e}")
-        return ''
+            return ''
     
     @classmethod
     async def get_message_by_id(cls, client, message_id: str) -> Dict:
         """通过API获取消息"""
-        try:
-            logger.debug(f"尝试通过API获取消息: {message_id}")
-            response = await client.api.call_action(
-                "get_msg",
-                message_id=int(message_id)  # API可能需要整数类型的ID
-            )
-            logger.debug(f"API返回结果: {response}")
-            if isinstance(response, dict):
-                message_cache.put(str(message_id), response)  # 缓存时转回字符串
-                return response
-        except Exception as e:
-            logger.error(f"获取消息失败, ID: {message_id}, 错误: {e}")
-        return {}
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                logger.debug(f"尝试通过API获取消息({attempt+1}/{max_retries}): {message_id}")
+                response = await client.api.call_action(
+                    "get_msg",
+                    message_id=int(message_id)
+                )
+                logger.debug(f"API返回结果: {response}")
+                if isinstance(response, dict):
+                    message_cache.put(str(message_id), response, expire=300)  # 缓存5分钟
+                    return response
+                return {}
+            except aiohttp.ServerDisconnectedError as e:
+                logger.warning(f"服务器连接断开，正在重试({attempt+1}/{max_retries}): {e}")
+                if attempt == max_retries - 1:
+                    logger.error(f"获取消息最终失败: {message_id}")
+                    message_cache.put(str(message_id), {}, expire=60)  # 空缓存1分钟
+                    return {}
+                await asyncio.sleep(2 ** attempt)
+            except Exception as e:
+                logger.error(f"获取消息失败, ID: {message_id}, 错误类型: {type(e).__name__}, 详情: {e}")
+                message_cache.put(str(message_id), {}, expire=60)
+                return {}
         
     @classmethod
     async def get_group_message_history(cls, client, group_id, count=20):
